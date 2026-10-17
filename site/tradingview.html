@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Autotrader TradingView</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+  .bar a,.bar button{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit;cursor:pointer;text-decoration:none}
+  .bar a:hover,.bar button:hover{border-color:var(--accent)}
+  #tv{height:calc(100vh - 150px);min-height:480px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .note{margin-top:8px;font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="bar" id="bar">
+  <a href="index.html">Bot overview</a><a href="terminal.html">Our terminal (bot trades + practice trading)</a>
+</div>
+<div id="tv"></div>
+<p class="muted note">This is TradingView's own free chart widget, so prices, markets and tools come from TradingView and follow its terms. It cannot show our bot's trades or practice orders, and the bot does not read data from it. Some exchanges' stock and index data is delayed. Use the symbol box inside the chart to search any market. Our terminal is the place for second-level charts, the bot overlay and practice trading.</p>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+  "use strict";
+  const PICKS = [["BTC Binance", "BINANCE:BTCUSDT"], ["BTC/CAD Kraken", "KRAKEN:BTCCAD"], ["BTC Coinbase", "COINBASE:BTCUSD"], ["Apple", "NASDAQ:AAPL"], ["EUR/USD", "FX:EURUSD"], ["Gold", "OANDA:XAUUSD"], ["S&P 500", "SP:SPX"]];
+  let current = "KRAKEN:BTCCAD";
+  function show(sym) {
+    current = sym; document.getElementById("tv").textContent = "";
+    if (typeof TradingView === "undefined") { document.getElementById("tv").textContent = "TradingView's script could not load (blocked by a network filter or ad blocker?)."; return; }
+    new TradingView.widget({ autosize: true, symbol: sym, interval: "1", timezone: "Etc/UTC", theme: "dark", style: "1", locale: "en",
+      enable_publishing: false, allow_symbol_change: true, hide_side_toolbar: false, details: true, hotlist: false, calendar: false,
+      studies: ["Volume@tv-basicstudies"], container_id: "tv" });
+  }
+  const bar = document.getElementById("bar");
+  for (const [label, sym] of PICKS) { const b = document.createElement("button"); b.textContent = label; b.addEventListener("click", () => show(sym)); bar.appendChild(b); }
+  show(current);
+</script>
+</body>
+</html>

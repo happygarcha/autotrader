@@ -1,6 +1,11 @@
 # Changelog
 Format: Keep a Changelog. Versioning: SemVer.
 
+## [0.6.0] - 2026-10-17
+### Added
+- `tradingview.html`: TradingView's official free chart widget for any market it carries.
+  Display only; the bot and our terminal still use exchange public APIs.
+
 ## [0.5.1] - 2026-10-17
 ### Fixed
 - Sub-minute charts were blank on Kraken and Coinbase until trades printed. They now start from each
