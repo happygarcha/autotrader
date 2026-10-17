@@ -31,6 +31,9 @@ CSV format: `timestamp,open,high,low,close[,volume]`.
 | `src/autotrader/validation.py` | Walk-forward, permutation test, Monte Carlo |
 | `docs/` | Process, requirements, architecture, test plan, safety, release plan, ADRs |
 
+## Integrity
+No faked, hand-typed or synthetic figures are ever shown as results. See [docs/08-integrity-rules.md](docs/08-integrity-rules.md).
+
 ## Documentation
 Start with [docs/00-process.md](docs/00-process.md), then
 [requirements](docs/01-requirements.md), [architecture](docs/02-architecture.md),
