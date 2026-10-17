@@ -8,5 +8,4 @@ positions, equity curve, trade history and the bot's decision log.
 - Chart library: TradingView Lightweight Charts v4.2.0 (Apache-2.0), vendored in `vendor/`.
 - Local preview: copy a data folder into `site/data/`, then `python3 -m http.server` in `site/`.
 - Hosting: GitHub Pages (free, requires a public repo) or any static host. To enable Pages:
-  repo Settings -> Pages -> Source: GitHub Actions, then Settings -> Variables -> add
-  `ENABLE_PAGES` = `true`.
+  repo Settings -> Pages -> Source: GitHub Actions. The hourly workflow then redeploys the site.
