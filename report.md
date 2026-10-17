@@ -9,6 +9,7 @@
 ## Selected strategies
 - XBTCAD: breakout {'lookback': 55, 'exit_lookback': 10} - passed validation; 67% of breakout grid positive; 18 variants tested so far
 - SOLCAD: breakout {'lookback': 55, 'exit_lookback': 10} - passed validation; 67% of breakout grid positive; 18 variants tested so far
+- ETHCAD: cash {} - no variant passed validation (27 tested)
 
 ## Live gate (informational; live is not wired in this entry point)
 - AUTOTRADER_LIVE not set to the confirmation phrase
@@ -19,3 +20,4 @@
 - -: XETHCAD: data error, skipped (Kraken error: ['EQuery:Unknown asset pair'])
 - 2026-10-16 00:00:00+00:00: XBTCAD: selected breakout {'lookback': 55, 'exit_lookback': 10} (passed validation; 67% of breakout grid positive; 18 variants tested so far)
 - 2026-10-16 00:00:00+00:00: SOLCAD: selected breakout {'lookback': 55, 'exit_lookback': 10} (passed validation; 67% of breakout grid positive; 18 variants tested so far)
+- 2026-10-16 00:00:00+00:00: ETHCAD: selected cash {} (no variant passed validation (27 tested))
