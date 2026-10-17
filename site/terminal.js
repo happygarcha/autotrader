@@ -214,12 +214,21 @@ async function loadSymbol() {
   const seq = ++S.loadSeq, sym = S.sym; if (!sym) return;
   const p = provOf(sym), res = Core.resolve(p.native, S.tf);
   $("symbtn").textContent = sym.label + "  ·  " + p.name + " ▾"; $("pname").textContent = sym.label + " · " + p.name;
-  S.tape = []; $("notice").textContent = "";
+  S.tape = []; $("notice").textContent = ""; delete $("notice").dataset.quiet;
   let bars = [];
   if (res.base) {
     try { bars = await p.candles(sym, res.base); if (res.agg) bars = Core.aggregate(bars, S.tf); S.diag[p.id].history = "ok"; }
     catch (e) { S.diag[p.id].history = "failed: " + e.message; $("notice").textContent = "Could not load history (" + e.message + "). Live ticks still build the chart."; }
-  } else $("notice").textContent = p.name + " has no " + S.tf + "s history, so this chart builds from live trades starting now. Binance offers 1-second history.";
+  } else {
+    try {
+      const ticks = await p.recentTrades(sym); const tmp = [];
+      for (const t of ticks) Core.applyTick(tmp, t, S.tf);
+      bars = tmp; S.diag[p.id].history = "recent trades ok";
+      const span = ticks.length ? Math.round(ticks[ticks.length - 1].time - ticks[0].time) : 0;
+      $("notice").textContent = p.name + " has no " + S.tf + "s candles, so this chart is built from its last " + ticks.length + " trades (about " + (span >= 120 ? Math.round(span / 60) + " min" : span + " s") + ") and then from live trades. Quiet markets show gaps between trades. Binance offers 1-second history.";
+    } catch (e) { S.diag[p.id].history = "failed: " + e.message; $("notice").textContent = "Could not load recent trades (" + e.message + "). The chart will build from live trades."; }
+  }
+  S.loadedAt = Date.now();
   if (seq !== S.loadSeq) return;
   S.bars = bars; rebuild(); renderAll(); syncFeeds();
 }
@@ -334,7 +343,10 @@ function renderDiag() {
   for (const p of Providers.all) {
     const d = S.diag[p.id] || {}, f = S.feeds[p.id];
     const age = f && f.last ? ((Date.now() - f.last) / 1000).toFixed(1) + "s ago" : "never";
-    box.appendChild(el("div", p.name + ": markets " + (d.rest || "–") + " · history " + (d.history || "–") + " · live feed " + (d.ws || "idle") + " · ticks " + (f ? f.count : 0) + " · last tick " + age));
+    box.appendChild(el("div", p.name + ": markets " + (d.rest || "–") + " · history " + (d.history || "–") + " · live feed " + (d.ws || "idle") + " · ticks " + (f ? f.count : 0) + " · last tick " + age + (f && f.lastErr ? " · last message from exchange: " + f.lastErr : "")));
+  }
+  if (S.sym && S.loadedAt && !S.tape.length && Date.now() - S.loadedAt > 20000 && S.feeds[S.sym.provider] && S.feeds[S.sym.provider].state === "live" && !$("notice").dataset.quiet) {
+    $("notice").dataset.quiet = "1"; $("notice").textContent += " Connected, but no trade has printed on this market in 20 seconds. Quiet markets can do that; try BTC/USDT on Binance for constant activity.";
   }
   const ok = Object.values(S.feeds).some((f) => f.state === "live");
   $("dot").className = "dot " + (ok ? "on" : Object.keys(S.feeds).length ? "off" : ""); $("conn").textContent = ok ? "live" : (Object.keys(S.feeds).length ? "connecting…" : "starting…");

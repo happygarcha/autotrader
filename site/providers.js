@@ -35,6 +35,13 @@ const Providers = (() => {
       const t = Object.values(j.result)[0]; const last = num(t.c[0]), open = num(t.o);
       return { last, changePct: open ? (last / open - 1) * 100 : null };
     },
+    // [price, volume, time, side b/s, type, misc, id] oldest first, last ~1000 trades
+    parseTrades(j) {
+      if (j.error && j.error.length) throw new Error(j.error.join(", "));
+      const key = Object.keys(j.result).find((k) => k !== "last");
+      return j.result[key].map((r) => ({ price: num(r[0]), size: num(r[1]), time: num(r[2]), side: r[3] === "b" ? "buy" : "sell" }));
+    },
+    async recentTrades(sym) { return kraken.parseTrades(await getJson(`https://api.kraken.com/0/public/Trades?pair=${encodeURIComponent(sym.id)}`)); },
     subMsg: (s) => ({ method: "subscribe", params: { channel: "trade", symbol: [s.ws], snapshot: false } }),
     unsubMsg: (s) => ({ method: "unsubscribe", params: { channel: "trade", symbol: [s.ws] } }),
     parseTicks(msg, idFor) {
@@ -58,6 +65,8 @@ const Providers = (() => {
     parseCandles(rows) { return rows.map((r) => ({ time: Math.floor(r[0] / 1000), open: num(r[1]), high: num(r[2]), low: num(r[3]), close: num(r[4]), volume: num(r[5]) })); },
     async candles(sym, sec) { return binance.parseCandles(await getJson(`https://data-api.binance.vision/api/v3/klines?symbol=${sym.id}&interval=${BIN_IV[sec]}&limit=1000`)); },
     async stats24(sym) { const j = await getJson(`https://data-api.binance.vision/api/v3/ticker/24hr?symbol=${sym.id}`); return { last: num(j.lastPrice), changePct: num(j.priceChangePercent) }; },
+    parseTrades(rows) { return rows.map((r) => ({ price: num(r.price), size: num(r.qty), time: r.time / 1000, side: r.isBuyerMaker ? "sell" : "buy" })); },
+    async recentTrades(sym) { return binance.parseTrades(await getJson(`https://data-api.binance.vision/api/v3/trades?symbol=${sym.id}&limit=1000`)); },
     subMsg: (s) => ({ method: "SUBSCRIBE", params: [s.id.toLowerCase() + "@trade"], id: Math.floor(Math.random() * 1e9) }),
     unsubMsg: (s) => ({ method: "UNSUBSCRIBE", params: [s.id.toLowerCase() + "@trade"], id: Math.floor(Math.random() * 1e9) }),
     parseTicks(msg) {
@@ -80,6 +89,9 @@ const Providers = (() => {
     parseCandles(rows) { return rows.map((r) => ({ time: r[0], open: num(r[3]), high: num(r[2]), low: num(r[1]), close: num(r[4]), volume: num(r[5]) })).sort((a, b) => a.time - b.time); },
     async candles(sym, sec) { return coinbase.parseCandles(await getJson(`https://api.exchange.coinbase.com/products/${sym.id}/candles?granularity=${sec}`)); },
     async stats24(sym) { const j = await getJson(`https://api.exchange.coinbase.com/products/${sym.id}/stats`); const last = num(j.last), open = num(j.open); return { last, changePct: open ? (last / open - 1) * 100 : null }; },
+    // [{time, trade_id, price, size, side}] newest first, up to 100
+    parseTrades(rows) { return rows.map((r) => ({ price: num(r.price), size: num(r.size), time: Date.parse(r.time) / 1000, side: r.side })).sort((a, b) => a.time - b.time); },
+    async recentTrades(sym) { return coinbase.parseTrades(await getJson(`https://api.exchange.coinbase.com/products/${sym.id}/trades?limit=100`)); },
     subMsg: (s) => ({ type: "subscribe", product_ids: [s.id], channels: ["matches"] }),
     unsubMsg: (s) => ({ type: "unsubscribe", product_ids: [s.id], channels: ["matches"] }),
     parseTicks(msg) {
@@ -91,7 +103,7 @@ const Providers = (() => {
 
   /* ---------------- live trade feed, one socket per provider ---------------- */
   class Feed {
-    constructor(p, onTick, onState) { this.p = p; this.onTick = onTick; this.onState = onState; this.subs = new Map(); this.ws = null; this.state = "idle"; this.count = 0; this.last = 0; this.closed = false; this.retry = 1000; }
+    constructor(p, onTick, onState) { this.p = p; this.onTick = onTick; this.onState = onState; this.subs = new Map(); this.ws = null; this.state = "idle"; this.count = 0; this.last = 0; this.closed = false; this.retry = 1000; this.lastErr = ""; }
     idFor(wsSym) { for (const s of this.subs.values()) if (s.ws === wsSym) return s.id; return null; }
     open() {
       if (this.ws || this.closed) return;
@@ -100,6 +112,7 @@ const Providers = (() => {
       ws.onopen = () => { this.retry = 1000; this._set("live"); for (const s of this.subs.values()) this._send(this.p.subMsg(s)); };
       ws.onmessage = (m) => {
         let msg; try { msg = JSON.parse(m.data); } catch (_) { return; }
+        if (msg && (msg.success === false || msg.error || msg.type === "error")) this.lastErr = JSON.stringify(msg).slice(0, 180);
         for (const t of this.p.parseTicks(msg, (w) => this.idFor(w))) { this.count++; this.last = Date.now(); this.onTick(this.p.id, t); }
       };
       ws.onclose = () => { this.ws = null; if (this.closed) return; this._set("reconnecting"); setTimeout(() => this.open(), this.retry); this.retry = Math.min(this.retry * 2, 15000); };

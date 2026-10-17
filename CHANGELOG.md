@@ -1,6 +1,11 @@
 # Changelog
 Format: Keep a Changelog. Versioning: SemVer.
 
+## [0.5.1] - 2026-10-17
+### Fixed
+- Sub-minute charts were blank on Kraken and Coinbase until trades printed. They now start from each
+  exchange's recent trades, and exchange error messages and quiet-market status show on screen.
+
 ## [0.5.0] - 2026-10-17
 ### Added
 - Terminal v2: Kraken + Binance + Coinbase markets, tick-by-tick live candles, 16 timeframes

@@ -31,4 +31,10 @@ assert.deepStrictEqual(cc[0], { time: 60, open: 1, high: 2, low: 0.5, close: 1.5
 const ct = P.coinbase.parseTicks({ type: "match", product_id: "BTC-USD", price: "100", size: "0.1", time: "2026-10-17T06:00:00.5Z", side: "buy" });
 assert.strictEqual(ct[0].id, "BTC-USD"); assert.deepStrictEqual(P.coinbase.parseTicks({ type: "subscriptions" }), []);
 assert.strictEqual(P.coinbase.parseSymbols([{ id: "BTC-USD", base_currency: "BTC", quote_currency: "USD", status: "online" }])[0].label, "BTC/USD");
+// recent trades -> ascending ticks
+const krt = P.kraken.parseTrades({ error: [], result: { XXBTZCAD: [[ "100.5", "0.2", 1700000001.5, "b", "m", "", 1 ], [ "100.7", "0.1", 1700000002.25, "s", "l", "", 2 ]], last: "x" } });
+assert.deepStrictEqual(krt.map((t) => t.side), ["buy", "sell"]); near(krt[1].time, 1700000002.25); near(krt[0].price, 100.5);
+const cbt = P.coinbase.parseTrades([{ time: "2026-10-17T06:00:02Z", price: "2", size: "1", side: "sell" }, { time: "2026-10-17T06:00:01Z", price: "1", size: "1", side: "buy" }]);
+assert.strictEqual(cbt[0].price, 1); assert.ok(cbt[1].time > cbt[0].time);
+const bnt = P.binance.parseTrades([{ price: "5", qty: "2", time: 1700000000500, isBuyerMaker: false }]); assert.strictEqual(bnt[0].side, "buy"); near(bnt[0].time, 1700000000.5);
 console.log("provider parser tests passed");
