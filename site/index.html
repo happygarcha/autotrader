@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Autotrader Terminal</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">Autotrader <span class="badge paper">PAPER · fake money</span></div>
+  <div class="status"><span id="dot" class="dot"></span><span id="conn">connecting…</span><span class="muted" id="asof"></span></div>
+</header>
+
+<section class="tiles" id="tiles"></section>
+
+<nav class="tabs" id="tabs" aria-label="Markets"></nav>
+
+<main class="grid">
+  <section class="card chartcard">
+    <div class="chead"><h2 id="ctitle">—</h2><div class="muted" id="cstrat"></div></div>
+    <div id="chart" class="chart"></div>
+    <div class="legend muted">Green ▲ entry · red ▼ exit · dashed lines show the open position's entry and stop-loss</div>
+  </section>
+
+  <section class="card">
+    <h2>Open positions</h2>
+    <div class="wrap"><table id="pos"><thead><tr><th>Market</th><th>Size</th><th>Entry</th><th>Now</th><th>P/L</th><th>Stop</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="card">
+    <h2>Equity</h2>
+    <div id="eq" class="chart small"></div>
+    <div class="muted" id="eqnote"></div>
+  </section>
+
+  <section class="card wide">
+    <h2>Trade history</h2>
+    <div class="wrap"><table id="trades"><thead><tr><th>Market</th><th>Entry</th><th>Exit</th><th>In</th><th>Out</th><th>Result</th><th>Why exit</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="card wide">
+    <h2>What the bot decided</h2>
+    <p class="muted">Selected strategies and every decision, newest first. The bot re-tests itself every 7 daily bars and sits in cash when nothing passes.</p>
+    <div class="wrap"><table id="sel"><thead><tr><th>Market</th><th>Strategy</th><th>Validation return</th><th>Sharpe</th><th>Max DD</th></tr></thead><tbody></tbody></table></div>
+    <ul id="events" class="events"></ul>
+  </section>
+</main>
+
+<footer class="muted">Paper trading with fake money on real Kraken prices. Not financial advice; no real orders exist. Charts by <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView Lightweight Charts™</a>.</footer>
+
+<script src="vendor/lightweight-charts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 name: paper-trading
 # Free 24/7 paper trading: GitHub runs this on a schedule, even with your PC off.
-# Uses fake money and public market data only. No secrets needed.
+# Fake money and public market data only. No secrets needed.
 on:
   schedule:
     - cron: "17 * * * *"   # hourly; the bot only acts when a new daily bar has closed
@@ -15,6 +15,8 @@ jobs:
   cycle:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      pages: ${{ vars.ENABLE_PAGES }}
     steps:
       - uses: actions/checkout@v4
         with: { ref: main }
@@ -27,18 +29,41 @@ jobs:
       - name: Restore state
         run: |
           mkdir -p state
-          [ -f state-branch/paper.json ] && cp state-branch/paper.json state/paper.json || true
+          if [ -f state-branch/paper.json ]; then cp state-branch/paper.json state/paper.json; fi
       - name: Run one paper cycle
-        run: python -m autotrader.paper_cli --config config/paper.json --state state/paper.json --report state/report.md
-      - name: Save state to paper-state branch
+        run: python -m autotrader.paper_cli --config config/paper.json --state state/paper.json --report state/report.md --site-data site/data
+      - name: Save state and chart data to the paper-state branch
         run: |
-          rm -rf state-branch
+          if [ ! -d state-branch/.git ]; then
+            git init -q state-branch
+            git -C state-branch checkout -q -b paper-state
+            git -C state-branch remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          fi
+          cd state-branch
+          mkdir -p data
+          cp ../state/paper.json paper.json
+          cp ../state/report.md report.md
+          cp ../site/data/paper.json ../site/data/candles.json data/
           git config user.name "autotrader-bot"; git config user.email "bot@users.noreply.github.com"
-          git fetch origin paper-state 2>/dev/null && git checkout paper-state || git checkout --orphan paper-state
-          git rm -rf . >/dev/null 2>&1 || true
-          cp /dev/null .keep
-          git add -f .keep
-          mkdir -p out && cp state/paper.json state/report.md . 2>/dev/null || true
-          git add -f paper.json report.md
+          git add -A
           git commit -m "paper state $(date -u +%FT%TZ)" || echo "no change"
           git push origin paper-state
+      - name: Build site for GitHub Pages
+        if: ${{ vars.ENABLE_PAGES == 'true' }}
+        run: |
+          mkdir -p public
+          cp -r site/. public/
+          mkdir -p public/data && cp site/data/*.json public/data/
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ vars.ENABLE_PAGES == 'true' }}
+        with: { path: public }
+
+  pages:
+    needs: cycle
+    if: ${{ vars.ENABLE_PAGES == 'true' }}
+    runs-on: ubuntu-latest
+    permissions: { pages: write, id-token: write }
+    environment: { name: github-pages, url: "${{ steps.deploy.outputs.page_url }}" }
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

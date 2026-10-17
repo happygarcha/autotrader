@@ -7,11 +7,13 @@ This entry point only ever uses the PaperBroker. Live trading is intentionally n
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import pandas as pd
 
 from .broker import PaperBroker
+from .connectors import CONNECTORS
 from .live_gate import check_live_gate
 from .runner import Config, load_state, run_cycle, save_state
 
@@ -40,12 +42,49 @@ def write_report(cfg: Config, state: dict, path: Path, gate_reasons: list[str]) 
     path.write_text("\n".join(lines) + "\n")
 
 
+class _CachingConnector:
+    """Remember the bars each asset fetched so the site can chart exactly what the bot saw."""
+
+    def __init__(self, cache: dict) -> None:
+        self.cache = cache
+
+    def for_asset(self, a):
+        inner = CONNECTORS[a.source]()
+        cache = self.cache
+
+        class _C:
+            def fetch_ohlc(self, symbol, interval_minutes):
+                df = inner.fetch_ohlc(symbol, interval_minutes)
+                cache[symbol] = df
+                return df
+
+        return _C()
+
+
+def write_site_data(cfg: Config, state: dict, cache: dict, out: Path) -> None:
+    """Write the JSON the chart site reads: full state plus recent candles per asset."""
+    out.mkdir(parents=True, exist_ok=True)
+    candles = {}
+    for a in cfg.assets:
+        df = cache.get(a.symbol)
+        if df is None:
+            continue
+        df = df.iloc[-300:]
+        candles[a.symbol] = [[int(ts.timestamp()), float(r.open), float(r.high), float(r.low),
+                              float(r.close)] for ts, r in df.iterrows()]
+    meta = {"start_equity": cfg.start_equity, "limits": cfg.limits.__dict__,
+            "assets": [a.__dict__ for a in cfg.assets]}
+    (out / "paper.json").write_text(json.dumps({**state, "meta": meta}, default=str))
+    (out / "candles.json").write_text(json.dumps(candles))
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="config/paper.json")
     ap.add_argument("--state", default="state/paper.json")
     ap.add_argument("--report", default="state/report.md")
     ap.add_argument("--root", default=".")
+    ap.add_argument("--site-data", default="site/data")
     args = ap.parse_args(argv)
 
     cfg = Config.load(Path(args.config))
@@ -55,8 +94,11 @@ def main(argv: list[str] | None = None) -> int:
     eq = pd.Series([e["equity"] for e in hist], dtype=float)
     gate = check_live_gate(Path(args.root), cfg.limits, days, _dd(eq))
 
-    state = run_cycle(cfg, state, PaperBroker(cfg.costs))
+    cache: dict = {}
+    state = run_cycle(cfg, state, PaperBroker(cfg.costs),
+                      connector_for=_CachingConnector(cache).for_asset)
     save_state(Path(args.state), state)
+    write_site_data(cfg, state, cache, Path(args.site_data))
     write_report(cfg, state, Path(args.report), gate.reasons)
     print(Path(args.report).read_text())
     return 0

@@ -1,6 +1,12 @@
 # Changelog
 Format: Keep a Changelog. Versioning: SemVer.
 
+## [0.3.0] - 2026-10-17
+### Added
+- Chart site (`site/`): candlesticks with entry/exit markers, live Kraken prices, positions,
+  equity, trades, decision log. Workflow exports chart data and can deploy to GitHub Pages.
+- Trades now record entry and exit prices.
+
 ## [0.2.0] - 2026-10-17
 ### Added
 - Kraken public connector, paper broker, runner with persisted state and CLI.

@@ -160,6 +160,8 @@ def run_cycle(cfg: Config, state: dict, broker: Broker, *, connector_for=None,
                                       pd.Timedelta(minutes=a.interval_minutes)))
                     state["trades"].append({"symbol": sym, "entry": ent["ts"], "exit": str(ts),
                                             "ret": ret, "bars_held": held,
+                                            "entry_price": ent["price"],
+                                            "exit_price": fill.price,
                                             "reason": "stop_loss" if was_stop else "signal"})
                     lessons = postmortem([t for t in state["trades"] if t["symbol"] == sym],
                                          state["multiplier"])
