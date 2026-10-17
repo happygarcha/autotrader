@@ -1,3 +1,3 @@
 """Autotrader: spot trading engine with backtesting, validation and hard risk limits."""
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"

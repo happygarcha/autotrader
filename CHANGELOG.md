@@ -1,6 +1,12 @@
 # Changelog
 Format: Keep a Changelog. Versioning: SemVer.
 
+## [0.5.0] - 2026-10-17
+### Added
+- Terminal v2: Kraken + Binance + Coinbase markets, tick-by-tick live candles, 16 timeframes
+  including 1s/5s/15s/30s, MACD, trendlines, Heikin Ashi, practice (fake-money) trading, tape,
+  connection diagnostics. Node tests for core, providers, indicators.
+
 ## [0.4.0] - 2026-10-17
 ### Added
 - Charts terminal: all Kraken markets, 7 timeframes, indicators, drawing, watchlist, live ticks,

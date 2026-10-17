@@ -1,29 +1,44 @@
 .term{padding-top:max(8px,env(safe-area-inset-top))}
-.tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
-.tbar button,.seg button,.navlink{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit;cursor:pointer;text-decoration:none}
+.tbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.tbar button,.seg button,.navlink,.tbar select,.panel button,.picker button{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit;cursor:pointer;text-decoration:none}
 .tbar button:hover,.navlink:hover{border-color:var(--accent)}
+.tbar select{padding:6px 8px}
 .seg{display:flex}.seg button{border-radius:0;margin-left:-1px}.seg button:first-child{border-radius:6px 0 0 6px;margin-left:0}.seg button:last-child{border-radius:0 6px 6px 0}
+.seg.scroll{overflow-x:auto;max-width:100%}
+.seg.full{width:100%}.seg.full button{flex:1}
 .seg button.on{background:#f0b4291f;border-color:var(--accent);position:relative}
-.symbtn{font-weight:650;min-width:130px;text-align:left}
-.menu{position:relative}.pop{position:absolute;z-index:20;top:110%;left:0;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:200px}
-.pop label{display:flex;gap:8px;align-items:center;padding:4px 0;cursor:pointer}
+.symbtn{font-weight:650;min-width:140px;text-align:left}
+.menu{position:relative}.pop{position:absolute;z-index:30;top:110%;left:0;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:200px}
+.pop[hidden]{display:none}.pop label{display:flex;gap:8px;align-items:center;padding:4px 0;cursor:pointer}
 .status{margin-left:auto}
-.picker{position:fixed;inset:0;z-index:50;background:#0b0e11f2;padding:max(12px,env(safe-area-inset-top)) 12px 12px;display:flex;flex-direction:column;gap:8px}
-.picker[hidden]{display:none}
-.pickhead{display:flex;gap:8px;flex-wrap:wrap}
+.picker{position:fixed;inset:0;z-index:50;background:#0b0e11f5;padding:max(12px,env(safe-area-inset-top)) 12px 12px;display:flex;flex-direction:column;gap:8px}
+.picker[hidden]{display:none}.pickhead{display:flex;gap:8px;flex-wrap:wrap}
 .pickhead input{flex:1;min-width:180px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:inherit}
 .piclist{overflow:auto;flex:1;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
-.row{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+.row{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
 .row:hover,.row:focus{background:#1a2128;outline:none}
-.row .tag{color:var(--accent);font-size:.72rem}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:10px}
+.row .tag{color:var(--accent);font-size:.72rem;margin-left:8px}.row .prov{color:var(--muted);font-size:.72rem;margin-left:8px}
+.pricebar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;margin-bottom:6px}
+.pname{font-weight:650}.pprice{font-size:1.5rem;font-weight:650;transition:color .25s}
+.pprice.up{color:var(--up)}.pprice.down{color:var(--down)}.pchg{font-size:.95rem}
+.ohlc{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}.tickrate{margin-left:auto;font-size:.8rem}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:10px}
 .mainchart{min-width:0}
-.chartbox{width:100%;height:520px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
-.chartbox.rsi{height:140px;margin-top:6px}
-.ohlc{min-height:1.5rem;font-size:.82rem;color:var(--muted);margin-bottom:4px;font-variant-numeric:tabular-nums}
-.side{display:flex;flex-direction:column;gap:10px;min-width:0}
-.watch .wrow{display:grid;grid-template-columns:1fr auto auto 22px;gap:8px;padding:6px 4px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
-.watch .wrow.sel{background:#1a2128}
-.watch .x{background:none;border:0;color:var(--muted);cursor:pointer}
-.tradecard{margin-top:10px}
-@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.chartbox{height:380px}.status{margin-left:0}}
+.chartbox{width:100%;height:540px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+.chartbox.pane{height:130px;margin-top:6px}
+.notice{margin-top:6px;font-size:.8rem;min-height:1.2em}
+.side{display:flex;flex-direction:column;gap:8px;min-width:0}
+.tabs2{display:flex}.tabs2 button{flex:1;background:var(--panel);color:var(--fg);border:1px solid var(--line);padding:7px 4px;cursor:pointer;font:inherit;margin-left:-1px}
+.tabs2 button:first-child{border-radius:6px 0 0 6px;margin-left:0}.tabs2 button:last-child{border-radius:0 6px 6px 0}
+.tabs2 button.on{border-color:var(--accent);background:#f0b4291f}
+.panel[hidden]{display:none}
+.watch .wrow{display:grid;grid-template-columns:1fr auto auto 22px;gap:8px;padding:7px 4px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
+.watch .wrow.sel{background:#1a2128}.watch .x{background:none!important;border:0!important;color:var(--muted);cursor:pointer;padding:0!important}
+.watch .p{transition:color .25s}.watch .prov{color:var(--muted);font-size:.7rem;margin-left:6px}
+.fld{display:flex;flex-direction:column;gap:3px;margin:8px 0;font-size:.8rem;color:var(--muted)}
+.fld input{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit}
+.submit{width:100%;margin-top:8px;font-weight:650}.submit.buy{background:#26a69a33!important;border-color:var(--up)!important}.submit.sell{background:#ef535033!important;border-color:var(--down)!important}
+.panel h3{font-size:.85rem;margin:12px 0 4px}.linkbtn{background:none!important;border:0!important;color:var(--muted)!important;text-decoration:underline;margin-top:10px;padding:0!important}
+.tape{max-height:420px;overflow:auto;font-size:.82rem}.tape div{display:flex;justify-content:space-between;padding:2px 4px;border-bottom:1px solid #1c232b}
+.tradecard{margin-top:10px}.diag{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.85rem}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.chartbox{height:400px}.status{margin-left:0}}

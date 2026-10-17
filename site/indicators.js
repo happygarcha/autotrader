@@ -37,3 +37,11 @@ const Ind = {
   },
 };
 if (typeof module !== "undefined") module.exports = Ind;
+Ind.macd = function (v, fast, slow, sig) {
+  const f = Ind.ema(v, fast), s = Ind.ema(v, slow), line = v.map((_, i) => (f[i] == null || s[i] == null ? null : f[i] - s[i]));
+  const first = line.findIndex((x) => x != null), signal = new Array(v.length).fill(null);
+  if (first >= 0) { const e = Ind.ema(line.slice(first), sig); e.forEach((x, i) => { signal[first + i] = x; }); }
+  const hist = line.map((x, i) => (x == null || signal[i] == null ? null : x - signal[i]));
+  return { line, signal, hist };
+};
+if (typeof module !== "undefined") module.exports = Ind;
