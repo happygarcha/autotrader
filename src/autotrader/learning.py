@@ -20,7 +20,7 @@ import pandas as pd
 
 from .backtest import run_backtest
 from .costs import CostModel
-from .metrics import max_drawdown
+from .metrics import max_drawdown, periods_per_year
 from .risk import RiskLimits
 from .strategies import Breakout, MeanReversion, SmaCross, Strategy
 from .validation import param_combinations
@@ -68,7 +68,8 @@ def _validation_stats(df: pd.DataFrame, strat: Strategy, split: int, costs, limi
     eq = res.equity.iloc[split - 1:]
     rets = eq.pct_change().dropna()
     trades_in_val = int((res.trades["exit"] >= df.index[split]).sum()) if len(res.trades) else 0
-    sharpe = float(rets.mean() / rets.std(ddof=1) * (365.25 ** 0.5)) if rets.std() > 0 else 0.0
+    ann = periods_per_year(df.index) ** 0.5  # works for daily and hourly bars alike
+    sharpe = float(rets.mean() / rets.std(ddof=1) * ann) if rets.std() > 0 else 0.0
     return {"ret": float(eq.iloc[-1] / eq.iloc[0] - 1), "sharpe": sharpe,
             "dd": max_drawdown(eq), "trades": trades_in_val}
 

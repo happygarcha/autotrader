@@ -61,7 +61,7 @@ class _CachingConnector:
         return _C()
 
 
-def write_site_data(cfg: Config, state: dict, cache: dict, out: Path) -> None:
+def write_site_data(cfg: Config, state: dict, cache: dict, out: Path, tag: str = "") -> None:
     """Write the JSON the chart site reads: full state plus recent candles per asset."""
     out.mkdir(parents=True, exist_ok=True)
     candles = {}
@@ -74,8 +74,8 @@ def write_site_data(cfg: Config, state: dict, cache: dict, out: Path) -> None:
                               float(r.close)] for ts, r in df.iterrows()]
     meta = {"start_equity": cfg.start_equity, "limits": cfg.limits.__dict__,
             "assets": [a.__dict__ for a in cfg.assets]}
-    (out / "paper.json").write_text(json.dumps({**state, "meta": meta}, default=str))
-    (out / "candles.json").write_text(json.dumps(candles))
+    (out / f"paper{tag}.json").write_text(json.dumps({**state, "meta": meta}, default=str))
+    (out / f"candles{tag}.json").write_text(json.dumps(candles))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -85,6 +85,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--report", default="state/report.md")
     ap.add_argument("--root", default=".")
     ap.add_argument("--site-data", default="site/data")
+    ap.add_argument("--tag", default="", help="suffix for site data files, e.g. _fast")
     args = ap.parse_args(argv)
 
     cfg = Config.load(Path(args.config))
@@ -98,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
     state = run_cycle(cfg, state, PaperBroker(cfg.costs),
                       connector_for=_CachingConnector(cache).for_asset)
     save_state(Path(args.state), state)
-    write_site_data(cfg, state, cache, Path(args.site_data))
+    write_site_data(cfg, state, cache, Path(args.site_data), args.tag)
     write_report(cfg, state, Path(args.report), gate.reasons)
     print(Path(args.report).read_text())
     return 0

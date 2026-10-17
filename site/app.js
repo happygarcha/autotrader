@@ -11,7 +11,7 @@ const px = (v) => (v == null ? "–" : v >= 100 ? nf(2).format(v) : nf(4).format
 const secs = (ts) => Math.floor(new Date(String(ts).replace(" ", "T")).getTime() / 1000);
 const fmtDate = (ts) => new Date(String(ts).replace(" ", "T")).toISOString().slice(0, 10);
 
-const S = { data: null, candles: {}, active: null, chart: null, candle: null, lines: [], eq: null,
+const S = { tag: "", interval: 1440, data: null, candles: {}, active: null, chart: null, candle: null, lines: [], eq: null,
             live: {}, ws: null, wsOk: false };
 
 function el(tag, text, cls) {
@@ -174,8 +174,8 @@ function renderAll() { renderTiles(); renderTabs(); renderChart(); renderEquity(
 
 async function load() {
   try {
-    const [d, c] = await Promise.all([getJson("paper.json"), getJson("candles.json")]);
-    S.data = d; S.candles = c;
+    const [d, c] = await Promise.all([getJson("paper" + S.tag + ".json"), getJson("candles" + S.tag + ".json")]);
+    S.data = d; S.candles = c; S.interval = (d.meta.assets[0] || {}).interval_minutes || 1440;
     if (!S.active || !c[S.active]) S.active = d.meta.assets.map((a) => a.symbol).find((s) => c[s]) || d.meta.assets[0].symbol;
     const eq = d.equity_history; $("asof").textContent = eq.length ? "state as of " + fmtDate(eq[eq.length - 1].ts) : "";
     renderAll();
@@ -190,7 +190,7 @@ function connectLive() {
   const ws = new WebSocket("wss://ws.kraken.com/v2"); S.ws = ws;
   ws.onopen = () => {
     ws.send(JSON.stringify({ method: "subscribe", params: { channel: "ticker", symbol: Object.keys(map) } }));
-    ws.send(JSON.stringify({ method: "subscribe", params: { channel: "ohlc", symbol: Object.keys(map), interval: 1440 } }));
+    ws.send(JSON.stringify({ method: "subscribe", params: { channel: "ohlc", symbol: Object.keys(map), interval: S.interval } }));
   };
   ws.onmessage = (m) => {
     let msg; try { msg = JSON.parse(m.data); } catch (_) { return; }
@@ -213,5 +213,12 @@ function connectLive() {
   ws.onerror = () => ws.close();
 }
 
+$("acct").addEventListener("change", async (e) => {
+  S.tag = e.target.value; S.active = null; S.live = {};
+  $("badge").textContent = S.tag ? "FAST LAB · fake money · hourly" : "PAPER · fake money";
+  if (S.ws) { S.ws.onclose = null; S.ws.close(); }
+  $("dot").className = "dot"; $("conn").textContent = "connecting…";
+  await load(); connectLive();
+});
 load().then(connectLive);
 setInterval(load, REFRESH_MS);

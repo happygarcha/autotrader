@@ -132,3 +132,9 @@ def test_runner_survives_data_outage():
     cfg = Config(assets=[Asset("TEST")])
     state = run_cycle(cfg, new_state(cfg), PaperBroker(), connector_for=lambda a: Broken())
     assert state["units"] == {} and any("data error" in e["msg"] for e in state["events"])
+
+
+def test_reselect_handles_hourly_bars():
+    h = synthetic_prices(800, seed=41, drift=0.0, freq="1h")
+    sel = reselect(h)
+    assert sel.strategy in {"cash", "sma_cross", "breakout", "mean_reversion"}

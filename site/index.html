@@ -8,7 +8,11 @@
 </head>
 <body>
 <header class="top">
-  <div class="brand">Autotrader <span class="badge paper">PAPER · fake money</span></div>
+  <div class="brand">Autotrader <span class="badge paper" id="badge">PAPER · fake money</span>
+    <select id="acct" aria-label="Account">
+      <option value="">Main account · daily bars (counts toward live gate)</option>
+      <option value="_fast">Fast lab · hourly bars (testing only)</option>
+    </select></div>
   <div class="status"><span id="dot" class="dot"></span><span id="conn">connecting…</span><span class="muted" id="asof"></span></div>
 </header>
 

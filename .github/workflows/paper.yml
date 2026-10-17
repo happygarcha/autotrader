@@ -28,8 +28,11 @@ jobs:
         run: |
           mkdir -p state
           if [ -f state-branch/paper.json ]; then cp state-branch/paper.json state/paper.json; fi
+          if [ -f state-branch/paper_fast.json ]; then cp state-branch/paper_fast.json state/paper_fast.json; fi
       - name: Run one paper cycle
         run: python -m autotrader.paper_cli --config config/paper.json --state state/paper.json --report state/report.md --site-data site/data
+      - name: Run one fast-lab cycle (hourly bars, separate fake account)
+        run: python -m autotrader.paper_cli --config config/paper_fast.json --state state/paper_fast.json --report state/report_fast.md --site-data site/data --tag _fast
       - name: Save state and chart data to the paper-state branch
         run: |
           if [ ! -d state-branch/.git ]; then
@@ -41,7 +44,9 @@ jobs:
           mkdir -p data
           cp ../state/paper.json paper.json
           cp ../state/report.md report.md
-          cp ../site/data/paper.json ../site/data/candles.json data/
+          cp ../state/paper_fast.json paper_fast.json
+          cp ../state/report_fast.md report_fast.md
+          cp ../site/data/paper.json ../site/data/candles.json ../site/data/paper_fast.json ../site/data/candles_fast.json data/
           git config user.name "autotrader-bot"; git config user.email "bot@users.noreply.github.com"
           git add -A
           git commit -m "paper state $(date -u +%FT%TZ)" || echo "no change"

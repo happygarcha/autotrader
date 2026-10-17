@@ -33,3 +33,5 @@ th{color:var(--muted);font-weight:500;font-size:.75rem}
 footer{margin-top:14px;font-size:.75rem}
 a{color:var(--accent)}
 @media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}.chartcard{grid-row:auto}.chart{height:340px}}
+
+select{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;max-width:100%}
