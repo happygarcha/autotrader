@@ -107,9 +107,10 @@ function ensureChart() {
 
 function renderChart() {
   ensureChart();
+  S.chart.applyOptions({ timeScale: { timeVisible: S.interval < 1440 } });
   const sym = S.active, rows = S.candles[sym] || [];
   const sel = S.data.selection[sym];
-  $("ctitle").textContent = sym + " · 1 day";
+  $("ctitle").textContent = sym + (S.interval < 1440 ? " · " + S.interval + " min" : " · 1 day");
   $("cstrat").textContent = sel ? (sel.strategy + " " + JSON.stringify(sel.params)) : "no strategy selected yet (cash)";
   S.candle.setData(rows.map((r) => ({ time: r[0], open: r[1], high: r[2], low: r[3], close: r[4] })));
   for (const l of S.lines) S.candle.removePriceLine(l);
