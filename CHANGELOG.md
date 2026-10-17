@@ -1,6 +1,11 @@
 # Changelog
 Format: Keep a Changelog. Versioning: SemVer.
 
+## [0.4.0] - 2026-10-17
+### Added
+- Charts terminal: all Kraken markets, 7 timeframes, indicators, drawing, watchlist, live ticks,
+  bot trade overlay. Indicator tests run in CI.
+
 ## [0.3.0] - 2026-10-17
 ### Added
 - Chart site (`site/`): candlesticks with entry/exit markers, live Kraken prices, positions,

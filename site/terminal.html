@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Autotrader Terminal</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="terminal.css">
+</head>
+<body class="term">
+<header class="tbar">
+  <a class="navlink" href="index.html">Bot overview</a>
+  <button id="symbtn" class="symbtn" aria-haspopup="listbox">Loading…</button>
+  <div class="seg" id="tfs" role="group" aria-label="Timeframe"></div>
+  <div class="seg" id="types" role="group" aria-label="Chart type">
+    <button data-type="candle" class="on">Candles</button><button data-type="line">Line</button>
+  </div>
+  <div class="menu">
+    <button id="indbtn">Indicators</button>
+    <div id="indmenu" class="pop" hidden></div>
+  </div>
+  <div class="seg" id="tools" role="group" aria-label="Drawing">
+    <button data-tool="cursor" class="on" title="Cursor">Cursor</button>
+    <button data-tool="hline" title="Click the chart to place a horizontal line">H-line</button>
+    <button data-tool="clear" title="Remove my lines on this symbol">Clear</button>
+  </div>
+  <div class="status"><span id="dot" class="dot"></span><span id="conn">connecting…</span></div>
+</header>
+
+<div id="picker" class="picker" hidden>
+  <div class="pickhead">
+    <input id="q" type="search" placeholder="Search any market, e.g. BTC, ETH, DOGE" autocomplete="off" aria-label="Search markets">
+    <div id="quotes" class="seg"></div>
+    <button id="pickclose" aria-label="Close">✕</button>
+  </div>
+  <div id="piclist" class="piclist" role="listbox"></div>
+</div>
+
+<div class="layout">
+  <section class="mainchart">
+    <div class="ohlc" id="ohlc"></div>
+    <div id="chart" class="chartbox"></div>
+    <div id="rsi" class="chartbox rsi" hidden></div>
+    <div class="legend muted">Prices and candles: Kraken public market data. Green ▲ / red ▼ are the bot's paper entries and exits (when it trades this market).</div>
+  </section>
+
+  <aside class="side">
+    <div class="card">
+      <h2>Watchlist</h2>
+      <div id="watch" class="watch"></div>
+    </div>
+    <div class="card" id="botcard">
+      <h2>Bot on <span id="botsym">—</span></h2>
+      <div id="botinfo" class="muted"></div>
+    </div>
+  </aside>
+</div>
+
+<section class="card tradecard">
+  <h2>Bot paper trades</h2>
+  <div class="wrap"><table id="btrades"><thead><tr><th>Account</th><th>Market</th><th>Entry</th><th>Exit</th><th>In</th><th>Out</th><th>Result</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<footer class="muted">Paper trading with fake money on real Kraken prices; no real orders exist. Not financial advice. Charts by <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView Lightweight Charts™</a>. This is an independent project, not affiliated with TradingView.</footer>
+
+<script src="vendor/lightweight-charts.js"></script>
+<script src="indicators.js"></script>
+<script src="terminal.js"></script>
+</body>
+</html>
