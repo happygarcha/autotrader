@@ -1,0 +1,2 @@
+# autotrader
+autotrader testing bot 
