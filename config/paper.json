@@ -1,0 +1,17 @@
+{
+  "start_equity": 10000,
+  "max_total_exposure": 0.6,
+  "retrain_every_bars": 7,
+  "limits": {
+    "max_position_frac": 0.2,
+    "stop_loss_frac": 0.08,
+    "daily_loss_limit_frac": 0.03,
+    "max_drawdown_frac": 0.15
+  },
+  "costs": {"fee_rate": 0.0026, "slippage_rate": 0.001},
+  "assets": [
+    {"symbol": "XBTCAD", "market": "crypto", "source": "kraken", "interval_minutes": 1440},
+    {"symbol": "XETHCAD", "market": "crypto", "source": "kraken", "interval_minutes": 1440},
+    {"symbol": "SOLCAD", "market": "crypto", "source": "kraken", "interval_minutes": 1440}
+  ]
+}

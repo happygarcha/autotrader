@@ -3,8 +3,8 @@
 | Sprint | Goal | Closes |
 |---|---|---|
 | S1 (done) | Research engine: data, costs, risk, backtester, metrics, validation, CLI, CI | FR-01..06, SAF-01..04,07,09 |
-| S2 | Public-candle connector for the chosen market; stored datasets; first strategy study report | FR-07 |
-| S3 | Broker interface, SimBroker, paper runner, SQLite trade log | FR-08, FR-10 |
+| S2 (done, untested live) | Kraken public-candle connector; parsing tested on fixtures; live fetch to be verified by first Actions run | FR-07 |
+| S3 (done) | Broker interface, paper broker, runner, JSON trade log, learning layer, GitHub Actions | FR-08, FR-10 |
 | S4 | Scheduler, daily/weekly reports, drift monitor | FR-11 |
 | S5 | One live adapter, reconciliation, kill switch, auto-halts, key handling | FR-09, SAF-05,06,08 |
 | S6 | Control API, alerts | FR-12, FR-14 |

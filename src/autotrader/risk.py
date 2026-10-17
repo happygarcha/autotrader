@@ -38,6 +38,20 @@ class RiskManager:
         self.stopped_out = False
         self.halt_reason = ""
 
+    def to_dict(self) -> dict:
+        keys = ("peak_equity", "day_start_equity", "entry_price", "halted_for_day",
+                "halted_until_reset", "stopped_out", "halt_reason")
+        d = {k: getattr(self, k) for k in keys}
+        d["current_day"] = None if self.current_day is None else str(self.current_day)
+        return d
+
+    @classmethod
+    def from_dict(cls, limits: RiskLimits, d: dict) -> RiskManager:
+        m = cls(limits)
+        for k, v in d.items():
+            setattr(m, k, v)
+        return m
+
     def reset_halt(self) -> None:
         """Owner action: clear a drawdown halt and restart the peak from current equity."""
         self.halted_until_reset = False
