@@ -11,7 +11,7 @@
   "costs": {"fee_rate": 0.0026, "slippage_rate": 0.001},
   "assets": [
     {"symbol": "XBTCAD", "market": "crypto", "source": "kraken", "interval_minutes": 1440},
-    {"symbol": "XETHCAD", "market": "crypto", "source": "kraken", "interval_minutes": 1440},
+    {"symbol": "ETHCAD", "market": "crypto", "source": "kraken", "interval_minutes": 1440},
     {"symbol": "SOLCAD", "market": "crypto", "source": "kraken", "interval_minutes": 1440}
   ]
 }
