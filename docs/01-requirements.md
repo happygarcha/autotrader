@@ -18,6 +18,7 @@ Priority: M = must, S = should, C = could. Status: Done / Planned.
 | FR-11 | Daily and weekly performance report | S | Planned S4 |
 | FR-12 | Local/remote API for clients (status, positions, limits view, kill switch) | M | Planned S6 |
 | FR-13 | Client apps: Windows, macOS, iOS, Android | S | Planned S7+ |
+| FR-15 | MetaTrader 5 Expert Advisor with identical risk limits, parity-tested against Python | S | Planned S6b |
 | FR-14 | Alerts (push/email) on halts, errors, drift from backtest | S | Planned S6 |
 
 ## Safety (see 04-safety-and-risk.md)

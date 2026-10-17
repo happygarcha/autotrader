@@ -9,6 +9,7 @@
 | S5 | One live adapter, reconciliation, kill switch, auto-halts, key handling | FR-09, SAF-05,06,08 |
 | S6 | Control API, alerts | FR-12, FR-14 |
 | S7 | Flutter app: status, positions, report, kill switch (desktop + mobile) | FR-13 |
+| S6b | MT5 Expert Advisor port with parity test and Strategy Tester report (ADR-0005) | FR-15 |
 | S8 | Packaging, signing, store/TestFlight builds, security review | NFR-07 |
 
 Gates G2/G3 sit between S3-S5 and are time-based (paper period), not sprint-based.
