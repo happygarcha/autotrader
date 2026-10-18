@@ -38,3 +38,9 @@ const cbt = P.coinbase.parseTrades([{ time: "2026-10-17T06:00:02Z", price: "2", 
 assert.strictEqual(cbt[0].price, 1); assert.ok(cbt[1].time > cbt[0].time);
 const bnt = P.binance.parseTrades([{ price: "5", qty: "2", time: 1700000000500, isBuyerMaker: false }]); assert.strictEqual(bnt[0].side, "buy"); near(bnt[0].time, 1700000000.5);
 console.log("provider parser tests passed");
+// HTTPS polling fallback only emits trades newer than what was seen, oldest first
+const rows = [{ time: 10, price: 1 }, { time: 12, price: 3 }, { time: 11, price: 2 }];
+assert.deepStrictEqual(P.newTrades(rows, 10, 0).map((r) => r.price), [2, 3]);
+assert.deepStrictEqual(P.newTrades(rows, null, 11).map((r) => r.price), [3]);
+assert.deepStrictEqual(P.newTrades(rows, 12, 0), []);
+console.log("providers tests ok");

@@ -101,9 +101,28 @@ const Providers = (() => {
     key: (s) => s.id,
   };
 
+  // trades newer than the last one seen (or, on the first poll, newer than minTime), oldest first
+  function newTrades(rows, lastSeen, minTime) {
+    const cut = lastSeen != null ? lastSeen : minTime;
+    return rows.filter((r) => r.time > cut).sort((a, b) => a.time - b.time);
+  }
   /* ---------------- live trade feed, one socket per provider ---------------- */
   class Feed {
-    constructor(p, onTick, onState) { this.p = p; this.onTick = onTick; this.onState = onState; this.subs = new Map(); this.ws = null; this.state = "idle"; this.count = 0; this.last = 0; this.closed = false; this.retry = 1000; this.lastErr = ""; }
+    constructor(p, onTick, onState) { this.p = p; this.onTick = onTick; this.onState = onState; this.subs = new Map(); this.ws = null; this.state = "idle"; this.count = 0; this.last = 0; this.closed = false; this.retry = 1000; this.lastErr = ""; this.polling = false; this.seen = new Map(); this.startedAt = Date.now() / 1000; this.pollTimer = null; }
+    // Fallback: if the websocket is blocked or silent, read recent trades over plain HTTPS every few seconds so the chart still moves.
+    startPolling() { if (this.pollTimer || this.closed) return; this.pollTimer = setInterval(() => this.poll(), this.pollMs || 3000); }
+    async poll() {
+      if (this.state === "live" && Date.now() - (this.last || 0) < 8000) { if (this.polling) { this.polling = false; this._set(this.state); } return; }
+      for (const s of [...this.subs.values()]) {
+        const k = this.p.key(s);
+        try {
+          const rows = await this.p.recentTrades(s), fresh = newTrades(rows, this.seen.get(k), this.startedAt - 5);
+          if (rows.length && this.seen.get(k) == null) this.seen.set(k, Math.max(...rows.map((r) => r.time)));
+          for (const t of fresh) { this.seen.set(k, Math.max(this.seen.get(k) || 0, t.time)); this.count++; this.last = Date.now(); this.onTick(this.p.id, { id: s.id, ...t }); }
+          if (!this.polling) { this.polling = true; this._set("polling (websocket not delivering; using HTTPS)"); }
+        } catch (e) { this.lastErr = "poll failed: " + e.message; }
+      }
+    }
     idFor(wsSym) { for (const s of this.subs.values()) if (s.ws === wsSym) return s.id; return null; }
     open() {
       if (this.ws || this.closed) return;
@@ -120,10 +139,10 @@ const Providers = (() => {
     }
     _set(st) { this.state = st; if (this.onState) this.onState(this.p.id, st); }
     _send(o) { if (this.ws && this.ws.readyState === 1) this.ws.send(JSON.stringify(o)); }
-    add(sym) { const k = this.p.key(sym); if (this.subs.has(k)) return; this.subs.set(k, sym); this.open(); this._send(this.p.subMsg(sym)); }
+    add(sym) { const k = this.p.key(sym); if (this.subs.has(k)) return; this.subs.set(k, sym); this.open(); this._send(this.p.subMsg(sym)); this.startPolling(); }
     remove(sym) { const k = this.p.key(sym); if (!this.subs.delete(k)) return; this._send(this.p.unsubMsg(sym)); }
   }
 
-  return { kraken, binance, coinbase, all: [kraken, binance, coinbase], Feed };
+  return { kraken, binance, coinbase, all: [kraken, binance, coinbase], Feed, newTrades };
 })();
 if (typeof module !== "undefined") module.exports = Providers;

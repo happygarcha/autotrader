@@ -1,4 +1,7 @@
 # Changelog
+
+## 0.6.1
+- Live feed: if a browser or network blocks the exchange websocket (or it goes silent for 8 s), the terminal now polls recent trades over plain HTTPS every 3 s so charts and seconds bars keep moving. The status badge says "live (HTTPS polling)" when this is active.
 Format: Keep a Changelog. Versioning: SemVer.
 
 ## [0.6.0] - 2026-10-17

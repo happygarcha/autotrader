@@ -348,8 +348,8 @@ function renderDiag() {
   if (S.sym && S.loadedAt && !S.tape.length && Date.now() - S.loadedAt > 20000 && S.feeds[S.sym.provider] && S.feeds[S.sym.provider].state === "live" && !$("notice").dataset.quiet) {
     $("notice").dataset.quiet = "1"; $("notice").textContent += " Connected, but no trade has printed on this market in 20 seconds. Quiet markets can do that; try BTC/USDT on Binance for constant activity.";
   }
-  const ok = Object.values(S.feeds).some((f) => f.state === "live");
-  $("dot").className = "dot " + (ok ? "on" : Object.keys(S.feeds).length ? "off" : ""); $("conn").textContent = ok ? "live" : (Object.keys(S.feeds).length ? "connecting…" : "starting…");
+  const ok = Object.values(S.feeds).some((f) => f.state === "live" || f.polling), poll = Object.values(S.feeds).some((f) => f.polling);
+  $("dot").className = "dot " + (ok ? "on" : Object.keys(S.feeds).length ? "off" : ""); $("conn").textContent = poll ? "live (HTTPS polling)" : ok ? "live" : (Object.keys(S.feeds).length ? "connecting…" : "starting…");
 }
 function renderAll() { renderHeader(); renderWatch(); renderTape(); renderTrade(); renderBot(); renderDiag(); }
 
