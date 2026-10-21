@@ -14,7 +14,7 @@
 ## Live gate (informational; live is not wired in this entry point)
 - AUTOTRADER_LIVE not set to the confirmation phrase
 - LIVE_APPROVED file missing (owner has not approved limits)
-- only 3 paper days (< 28)
+- only 4 paper days (< 28)
 
 ## Recent events
 - -: XETHCAD: data error, skipped (Kraken error: ['EQuery:Unknown asset pair'])
