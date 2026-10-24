@@ -7,7 +7,7 @@
 - Open positions: none
 
 ## Selected strategies
-- XBTCAD: breakout {'lookback': 55, 'exit_lookback': 10} - passed validation; 67% of breakout grid positive; 18 variants tested so far
+- XBTCAD: breakout {'lookback': 55, 'exit_lookback': 10} - passed validation; 56% of breakout grid positive; 18 variants tested so far
 - SOLCAD: breakout {'lookback': 55, 'exit_lookback': 10} - passed validation; 67% of breakout grid positive; 18 variants tested so far
 - ETHCAD: cash {} - no variant passed validation (27 tested)
 
