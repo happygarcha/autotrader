@@ -11,7 +11,7 @@
    "halted_until_reset": false,
    "stopped_out": false,
    "halt_reason": "",
-   "current_day": "2026-10-25"
+   "current_day": "2026-10-26"
   },
   "SOLCAD": {
    "peak_equity": 10000,
@@ -21,7 +21,7 @@
    "halted_until_reset": false,
    "stopped_out": false,
    "halt_reason": "",
-   "current_day": "2026-10-25"
+   "current_day": "2026-10-26"
   },
   "ETHCAD": {
    "peak_equity": 10000,
@@ -31,7 +31,7 @@
    "halted_until_reset": false,
    "stopped_out": false,
    "halt_reason": "",
-   "current_day": "2026-10-25"
+   "current_day": "2026-10-26"
   }
  },
  "selection": {
@@ -67,14 +67,14 @@
   }
  },
  "last_bar": {
-  "XBTCAD": "2026-10-25 00:00:00+00:00",
-  "SOLCAD": "2026-10-25 00:00:00+00:00",
-  "ETHCAD": "2026-10-25 00:00:00+00:00"
+  "XBTCAD": "2026-10-26 00:00:00+00:00",
+  "SOLCAD": "2026-10-26 00:00:00+00:00",
+  "ETHCAD": "2026-10-26 00:00:00+00:00"
  },
  "bars_since_retrain": {
-  "XBTCAD": 2,
-  "SOLCAD": 2,
-  "ETHCAD": 2
+  "XBTCAD": 3,
+  "SOLCAD": 3,
+  "ETHCAD": 3
  },
  "cooldown": {},
  "multiplier": 1.0,
@@ -118,6 +118,10 @@
   },
   {
    "ts": "2026-10-25 00:00:00+00:00",
+   "equity": 10000
+  },
+  {
+   "ts": "2026-10-26 00:00:00+00:00",
    "equity": 10000
   }
  ],
